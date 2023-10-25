@@ -1,5 +1,7 @@
 FROM ubuntu:22.04
 
+RUN useradd -m appuser
+
 WORKDIR /app
 
 COPY requirements.txt .
@@ -10,6 +12,10 @@ RUN apt-get update && \
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY app/ .
+
+RUN chown -R appuser:appuser /app
+
+USER appuser
 
 EXPOSE 5000
 
