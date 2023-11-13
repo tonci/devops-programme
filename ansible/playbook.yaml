@@ -5,7 +5,6 @@
   become: no
 
   vars:
-    ansible_python_interpreter: "/opt/homebrew/bin/python3"
     image_name: "tonci123/devops-programme"
     image_tag: "latest"
     listen_port: "8080"
@@ -25,3 +24,27 @@
         source: build
 #        push: yes
         state: present
+
+    - name: Push Docker image to Docker Hub
+      docker_image:
+        docker_host: "unix://{{ ansible_env.HOME }}/.docker/run/docker.sock"
+        name: "{{ image_name }}"
+        tag: "{{ image_tag }}"
+        push: yes
+        source: local
+        build:
+          path: "{{ dockerfile_path }}"
+          pull: yes
+
+    - name: Run Docker image
+      docker_container:
+        name: python_app
+        image: "{{ image_name }}:{{ image_tag }}"
+        state: started
+        recreate: yes
+        exposed_ports:
+          - "{{ listen_port }}"
+        published_ports:
+          - "{{ listen_port }}:{{ listen_port }}"
+        env:
+          PORT: "{{ listen_port }}"
