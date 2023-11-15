@@ -1,5 +1,5 @@
 name: Practice CI
-run-name: ${{ github.actor }} is doing very important work 🚀
+run-name: ${{ github.actor }} is doing another CI (Fingers crossed!) 🚀
 on: [push]
 jobs:
   editorconfig:
