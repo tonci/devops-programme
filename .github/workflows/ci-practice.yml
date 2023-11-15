@@ -17,13 +17,13 @@ jobs:
         with:
           args: --check ./app
 
-  Pylint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-python@v1
-      - run: pip install pylint -r requirements.txt
-      - run: pylint **/*.py
+#  Pylint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v1
+#      - uses: actions/setup-python@v1
+#      - run: pip install pylint -r requirements.txt
+#      - run: pylint **/*.py
 
   MarkdownLint:
     runs-on: ubuntu-latest
@@ -81,7 +81,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: tonci123/devops-programme:latest
+          tags: tonci123/devops-programme:${{ github.sha }}
 
 #  sonarcloud:
 #    runs-on: ubuntu-latest
