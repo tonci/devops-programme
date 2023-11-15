@@ -80,7 +80,27 @@ jobs:
       - name: Get short SHA
         run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
 
-      - name: Build and push
+#      - name: Build and push
+#        uses: docker/build-push-action@v5
+#        with:
+#          push: true
+#          tags: tonci123/devops-programme:${{ env.SHORT_SHA }}
+
+      - name: Build but not push
+        uses: docker/build-push-action@v5
+        with:
+          push: false
+          tags: tonci123/devops-programme:${{ env.SHORT_SHA }}
+          load: true  # Load the built image into Docker daemon
+
+      - name: Scan the image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'tonci123/devops-programme:${{ env.SHORT_SHA }}'
+          format: 'table'
+          exit-code: '1'  # Fail step if vulnerabilities are found
+
+      - name: Push the image to Docker Hub
         uses: docker/build-push-action@v5
         with:
           push: true
