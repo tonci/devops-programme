@@ -47,7 +47,7 @@ jobs:
   PyTest:
     name: Unit Test with PyTest
     runs-on: ubuntu-latest
-    needs: [lint, MarkdownLint, gitleaks, editorconfig, Pylint, snyk]
+    needs: [lint, MarkdownLint, gitleaks, editorconfig, Pylint]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -79,7 +79,7 @@ jobs:
   # As optimisation - this is needed only if there is actually something changed.
   docker:
     name: Build and push Docker image to dockerhub
-    needs: [PyTest]
+    needs: [snyk]
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
