@@ -93,6 +93,8 @@ jobs:
           tags: tonci123/devops-programme:${{ env.SHORT_SHA }}
           load: true  # Load the built image into Docker daemon
 
+# I would rather scan this on cron (E.G. every day) and alert on a channel, then fail the build.
+# for reference: https://github.com/aquasecurity/trivy-action
       - name: Scan the image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
