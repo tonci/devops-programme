@@ -77,11 +77,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Get short SHA
+        run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: tonci123/devops-programme:${{ github.sha }}
+          tags: tonci123/devops-programme:${{ env.SHORT_SHA }}
 
 #  sonarcloud:
 #    runs-on: ubuntu-latest
