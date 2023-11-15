@@ -8,8 +8,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Checkout .editorconfig
+      - name: Use .editorconfig
         uses: editorconfig-checker/action-editorconfig-checker@main
+      - name: Run EditorConfig Checker
         run: editorconfig-checker
 
       - name: Lint with Black
@@ -17,8 +18,9 @@ jobs:
         with:
           args: --check ./app
 
-      - name: Install Pylint
+      - name: Setup python
         uses: actions/setup-python@v1
+      - name: Install dependencies
         run: pip install pylint -r requirements.txt
       - name: Lint with Pylint
         run: pylint --disable=missing-module-docstring,missing-class-docstring,missing-function-docstring **/*.py
