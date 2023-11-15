@@ -2,52 +2,76 @@ name: Practice CI
 run-name: ${{ github.actor }} is doing another CI (Fingers crossed!) 🚀
 on: [push]
 jobs:
-  editorconfig:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: editorconfig-checker/action-editorconfig-checker@main
-      - run: editorconfig-checker
-
-  lint:
+  static-code-analysis:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: psf/black@stable
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use .editorconfig
+        uses: editorconfig-checker/action-editorconfig-checker@main
+      - name: Run EditorConfig Checker
+        run: editorconfig-checker
+
+      - name: Lint with Black
+        uses: psf/black@stable
         with:
           args: --check ./app
 
-  Pylint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-python@v1
-      - run: pip install pylint -r requirements.txt
-      - run: pylint --disable=missing-module-docstring,missing-class-docstring,missing-function-docstring **/*.py
+      - name: Setup python
+        uses: actions/setup-python@v1
+      - name: Install dependencies
+        run: pip install pylint -r requirements.txt
+      - name: Lint with Pylint
+        run: pylint --disable=missing-module-docstring,missing-class-docstring,missing-function-docstring **/*.py
 
-  MarkdownLint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
       - name: Run Markdown Lint
         uses: actionshub/markdownlint@main
 
-  gitleaks:
-    name: gitleaks
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+      - name: Check with GitLeaks
+        uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+#  lint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: psf/black@stable
+#        with:
+#          args: --check ./app
+
+#  Pylint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v1
+#      - uses: actions/setup-python@v1
+#      - run: pip install pylint -r requirements.txt
+#      - run: pylint --disable=missing-module-docstring,missing-class-docstring,missing-function-docstring **/*.py
+
+#  MarkdownLint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Check out code
+#        uses: actions/checkout@v2
+#      - name: Run Markdown Lint
+#        uses: actionshub/markdownlint@main
+
+#  gitleaks:
+#    name: gitleaks
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#      - uses: gitleaks/gitleaks-action@v2
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   PyTest:
     name: Unit Test with PyTest
     runs-on: ubuntu-latest
-    needs: [lint, MarkdownLint, gitleaks, editorconfig, Pylint]
+    needs: [static-code-analysis]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -67,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [PyTest]
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python-3.8@master
         env:
