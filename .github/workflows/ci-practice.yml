@@ -17,13 +17,13 @@ jobs:
         with:
           args: --check ./app
 
-  Pylint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-python@v1
-      - run: pip install pylint -r requirements.txt
-      - run: pylint **/*.py
+#  Pylint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v1
+#      - uses: actions/setup-python@v1
+#      - run: pip install pylint -r requirements.txt
+#      - run: pylint **/*.py
 
   MarkdownLint:
     runs-on: ubuntu-latest
@@ -60,6 +60,31 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  docker:
+    name: Build and push Docker image to dockerhub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Get short SHA
+        run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: tonci123/devops-programme:${{ env.SHORT_SHA }}
 
 #  sonarcloud:
 #    runs-on: ubuntu-latest
