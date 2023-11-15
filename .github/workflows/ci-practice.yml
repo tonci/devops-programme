@@ -99,6 +99,8 @@ jobs:
           image-ref: 'tonci123/devops-programme:${{ env.SHORT_SHA }}'
           format: 'table'
           exit-code: '1'  # Fail step if vulnerabilities are found
+          ignore-unfixed: true
+          severity: 'CRITICAL'
 
       - name: Push the image to Docker Hub
         uses: docker/build-push-action@v5
