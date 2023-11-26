@@ -1,6 +1,9 @@
 name: Practice CI
 run-name: ${{ github.actor }} is doing another CI (Fingers crossed!) 🚀
-on: [push]
+on:
+  push:
+    branches:
+      - ci-practice
 jobs:
   static-code-analysis:
     runs-on: ubuntu-latest
