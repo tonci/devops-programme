@@ -1,4 +1,4 @@
-FROM nginx:1.20-alpine
+FROM nginx:1.24-alpine
 
 COPY index.html /usr/share/nginx/html
 WORKDIR /app
